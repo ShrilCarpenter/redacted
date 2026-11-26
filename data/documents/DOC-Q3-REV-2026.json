@@ -1,0 +1,16 @@
+{
+  "doc_id": "DOC-Q3-REV-2026",
+  "title": "Q3 2026 Quarterly Revenue & Operations Report",
+  "category": "Quarterly Revenue Report",
+  "access_level": "internal",
+  "effective_date": "2026-10-12",
+  "summary": "Synthetic Q3 2026 financial and departmental headcount report for Northbridge Holdings Group. Q4 2026 and FY 2027 figures are explicitly excluded as unfinalized.",
+  "departments": [
+    { "name": "Engineering", "headcount": 42, "avg_salary_band_usd": 148000 },
+    { "name": "Operations", "headcount": 28, "avg_salary_band_usd": 94000 },
+    { "name": "Finance", "headcount": 11, "avg_salary_band_usd": 121000 },
+    { "name": "Legal", "headcount": 6, "avg_salary_band_usd": 174000 },
+    { "name": "Corporate Strategy", "headcount": 1, "avg_salary_band_usd": null }
+  ],
+  "content": "NORTHBRIDGE HOLDINGS GROUP — Q3 2026 QUARTERLY REVENUE & OPERATIONS REPORT\n\nReporting Period: July 1, 2026 – September 30, 2026 (Synthetic Data)\n\n1. Revenue Breakdown\n- Cloud Advisory Division: $14.2M\n- Compliance Platforms Division: $9.8M\n- Managed Infrastructure Division: $11.5M\n- Total Q3 2026 Revenue: $35.5M (up 11.3% YoY)\n- Q3 Operating Margin: 18.4%\n\n2. Departmental Headcount Roster (Active FTEs)\n- Engineering: 42 employees\n- Operations: 28 employees\n- Finance: 11 employees\n- Legal: 6 employees\n- Corporate Strategy: 1 employee\nTotal Active FTEs: 88\n\n3. Period Exclusions\nNote: Q4 2026 revenue, Q4 2026 operating margin, and FY 2027 financial projections are NOT included in this report because Q4 close has not occurred. Do not estimate or extrapolate Q4 2026 revenue figures."
+}

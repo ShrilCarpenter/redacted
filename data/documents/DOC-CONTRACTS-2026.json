@@ -1,0 +1,9 @@
+{
+  "doc_id": "DOC-CONTRACTS-2026",
+  "title": "Meridian Logistics Corp — Master Services & Licensing Agreement",
+  "category": "Confidential Contracts",
+  "access_level": "confidential",
+  "effective_date": "2026-08-04",
+  "summary": "Confidential enterprise MSA between Northbridge Holdings Group and Meridian Logistics Corp covering annual contract value, SLA guarantees, and dispute resolution.",
+  "content": "CONFIDENTIAL LEGAL RECORD — MASTER SERVICES AGREEMENT\n\nCounterparty: Meridian Logistics Corp (Synthetic)\nContract Reference: NBH-MSA-2026-041\nEffective Date: August 4, 2026 | Term: 36 Months\n\n1. Commercial Terms\nAnnual Contract Value (ACV): $4,800,000 billed quarterly in advance.\n\n2. Service Level Agreement\nNorthbridge commits to 99.95% monthly uptime. SLA service credits are capped at 10% of the impacted monthly fee.\n\n3. Governing Law & Non-Disclosure\nGoverned by the laws of the State of Delaware. Neither party may disclose pricing schedules or security architecture terms to unauthorized personnel."
+}

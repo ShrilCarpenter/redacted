@@ -1,0 +1,58 @@
+{
+  "harnessName": "redacted_document_assistant",
+  "executionRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/RedactedAgentCoreHarnessExecutionRole",
+  "model": {
+    "bedrockModelConfig": {
+      "modelId": "us.anthropic.claude-sonnet-4-5-20250514-v1:0",
+      "apiFormat": "converse_stream",
+      "temperature": 0.1,
+      "maxTokens": 1200,
+      "additionalParams": {
+        "guardrailConfig": {
+          "guardrailIdentifier": "<BEDROCK_GUARDRAIL_ID>",
+          "guardrailVersion": "1",
+          "trace": "enabled_full"
+        }
+      }
+    }
+  },
+  "allowedTools": [
+    "@list_authorized_documents",
+    "@search_authorized_documents",
+    "@get_authorized_document",
+    "@get_department_compensation_summary"
+  ],
+  "environment": {
+    "agentCoreRuntimeEnvironment": {
+      "lifecycleConfiguration": {
+        "idleRuntimeSessionTimeout": 300,
+        "maxLifetime": 3600
+      },
+      "networkConfiguration": {
+        "networkMode": "PUBLIC"
+      }
+    }
+  },
+  "memory": {
+    "managedMemoryConfiguration": {
+      "strategies": ["SUMMARIZATION"],
+      "eventExpiryDuration": 3
+    }
+  },
+  "truncation": {
+    "strategy": "sliding_window",
+    "config": {
+      "slidingWindow": {
+        "messagesCount": 20
+      }
+    }
+  },
+  "maxIterations": 8,
+  "maxTokens": 2048,
+  "timeoutSeconds": 90,
+  "tags": {
+    "application": "redacted",
+    "challenge": "aws-bedrock-managed-agents",
+    "security_tier": "strict-least-privilege"
+  }
+}

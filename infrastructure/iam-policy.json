@@ -1,0 +1,31 @@
+{
+  "description": "Combined least-privilege IAM policy overview for Redacted. Individual role trust, execution, caller, and S3 bucket policies are stored alongside this file in infrastructure/.",
+  "roles": {
+    "RedactedAgentCoreHarnessExecutionRole": {
+      "trust_policy_file": "harness-trust-policy.json",
+      "permissions_policy_file": "harness-execution-policy.json",
+      "guarantees": [
+        "No S3 read/write/delete permissions (explicit Deny on s3:*)",
+        "No sts:AssumeRole permissions",
+        "No bedrock-agentcore:InvokeAgentRuntimeCommand or InvokeAgentRuntimeCommandShell",
+        "Scoped to Bedrock InvokeModel/ApplyGuardrail, redacted-harness-hook Lambda, and CloudWatch/X-Ray telemetry"
+      ]
+    },
+    "RedactedBackendCallerRole": {
+      "permissions_policy_file": "backend-caller-policy.json",
+      "guarantees": [
+        "InvokeHarness scoped to specific Redacted Harness ARN",
+        "Read-only s3:GetObject and s3:ListBucket on documents/*",
+        "Explicit Deny on s3:PutObject, s3:DeleteObject, and direct runtime shell execution"
+      ]
+    },
+    "RedactedDocRetrieverLambdaRole": {
+      "permissions_policy_file": "s3-read-only-policy.json",
+      "bucket_policy_file": "s3-bucket-policy.json",
+      "guarantees": [
+        "Read-only S3 access to documents/* with TLS enforcement",
+        "Explicit Deny on writes, deletes, and Harness Execution Role direct S3 access"
+      ]
+    }
+  }
+}

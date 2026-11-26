@@ -1,0 +1,9 @@
+{
+  "doc_id": "DOC-HANDBOOK-2026",
+  "title": "Employee Handbook & Workplace Governance Manual (2026 Edition)",
+  "category": "Employee Handbook",
+  "access_level": "public",
+  "effective_date": "2026-01-15",
+  "summary": "Standard workplace policies for Northbridge Holdings Group including working hours, PTO, travel expense limits, acceptable use, and document classification rules.",
+  "content": "NORTHBRIDGE HOLDINGS GROUP — EMPLOYEE HANDBOOK (2026 EDITION)\n\n1. Work Schedule & Paid Time Off\nFull-time exempt staff work a standard 40-hour schedule with hybrid flexibility (minimum three in-office days per week). Full-time employees accrue 22 days of Paid Time Off (PTO) annually plus 11 company-observed holidays.\n\n2. Business Travel & Expense Reimbursement\n- Daily Meal Cap: Up to $150 per travel day with itemized receipts.\n- Lodging Cap: Up to $320 per night in Tier-1 metro areas ($220 standard).\n- Airfare: Economy cabin required for flights under 6 hours.\n\n3. Information Classification & Record Handling\nEvery company record carries one of four labels: PUBLIC, INTERNAL, CONFIDENTIAL, or RESTRICTED. Employees may access only records required for their assigned role. Company records are read-only in document assistant sessions; staff must never attempt bulk exports or share restricted compensation details.\n\n4. Security Incident Reporting\nSuspected phishing, prompt-injection payloads in vendor attachments, or unauthorized access attempts must be reported immediately to security-ops@northbridge.example."
+}

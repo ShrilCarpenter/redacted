@@ -1,0 +1,50 @@
+[
+  {
+    "beforeInvocation": {
+      "name": "redacted_before_invocation_guard",
+      "target": {
+        "lambda": {
+          "arn": "arn:aws:lambda:<REGION>:<ACCOUNT_ID>:function:redacted-harness-hook",
+          "timeoutSeconds": 10,
+          "failureMode": "deny"
+        }
+      }
+    }
+  },
+  {
+    "beforeToolCall": {
+      "name": "redacted_before_tool_call_guard",
+      "target": {
+        "lambda": {
+          "arn": "arn:aws:lambda:<REGION>:<ACCOUNT_ID>:function:redacted-harness-hook",
+          "timeoutSeconds": 10,
+          "failureMode": "deny"
+        }
+      }
+    }
+  },
+  {
+    "afterToolCall": {
+      "name": "redacted_after_tool_call_guard",
+      "target": {
+        "lambda": {
+          "arn": "arn:aws:lambda:<REGION>:<ACCOUNT_ID>:function:redacted-harness-hook",
+          "timeoutSeconds": 10,
+          "failureMode": "deny"
+        }
+      }
+    }
+  },
+  {
+    "afterInvocation": {
+      "name": "redacted_after_invocation_audit",
+      "target": {
+        "lambda": {
+          "arn": "arn:aws:lambda:<REGION>:<ACCOUNT_ID>:function:redacted-harness-hook",
+          "timeoutSeconds": 10,
+          "failureMode": "allow"
+        }
+      }
+    }
+  }
+]

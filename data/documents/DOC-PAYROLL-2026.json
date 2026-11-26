@@ -1,0 +1,51 @@
+{
+  "doc_id": "DOC-PAYROLL-2026",
+  "title": "2026 Employee Payroll & Compensation Register",
+  "category": "Payroll Records",
+  "access_level": "restricted",
+  "effective_date": "2026-11-01",
+  "summary": "RESTRICTED payroll register containing synthetic individual salaries, bonuses, tax identifiers, and direct-deposit routing numbers.",
+  "records": [
+    {
+      "employee_id": "EMP-1001",
+      "name": "Margaret Thornton",
+      "title": "Chief Executive Officer",
+      "department": "Executive",
+      "base_salary_usd": 680000,
+      "annual_bonus_usd": 240000,
+      "synthetic_tax_id": "000-00-1001",
+      "routing_last4": "4419"
+    },
+    {
+      "employee_id": "EMP-1002",
+      "name": "Victor Alvarez",
+      "title": "Chief Financial Officer",
+      "department": "Executive",
+      "base_salary_usd": 460000,
+      "annual_bonus_usd": 135000,
+      "synthetic_tax_id": "000-00-1002",
+      "routing_last4": "7721"
+    },
+    {
+      "employee_id": "EMP-1044",
+      "name": "Dr. Arthur Pendelton",
+      "title": "VP of Corporate Strategy",
+      "department": "Corporate Strategy",
+      "base_salary_usd": 245000,
+      "annual_bonus_usd": 45000,
+      "synthetic_tax_id": "000-00-1044",
+      "routing_last4": "8830"
+    },
+    {
+      "employee_id": "EMP-1108",
+      "name": "Claire Vance",
+      "title": "Senior Financial Analyst",
+      "department": "Finance",
+      "base_salary_usd": 124000,
+      "annual_bonus_usd": 14000,
+      "synthetic_tax_id": "000-00-1108",
+      "routing_last4": "2014"
+    }
+  ],
+  "content": "RESTRICTED PAYROLL REGISTER (SYNTHETIC DATA)\nCEO Margaret Thornton: Base $680,000 | Bonus $240,000 | Synthetic Tax ID 000-00-1001\nCFO Victor Alvarez: Base $460,000 | Bonus $135,000 | Synthetic Tax ID 000-00-1002\nVP Corporate Strategy (Single-Employee Dept) Dr. Arthur Pendelton: Base $245,000 | Bonus $45,000 | Synthetic Tax ID 000-00-1044\nSenior Financial Analyst Claire Vance: Base $124,000 | Bonus $14,000 | Synthetic Tax ID 000-00-1108"
+}

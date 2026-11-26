@@ -1,0 +1,105 @@
+{
+  "organization": "Northbridge Holdings Group (Synthetic Enterprise Dataset)",
+  "dataset_version": "2026.4",
+  "min_anonymity_group_size": 5,
+  "documents": [
+    {
+      "doc_id": "DOC-HANDBOOK-2026",
+      "title": "Employee Handbook & Workplace Governance Manual (2026 Edition)",
+      "category": "Employee Handbook",
+      "access_level": "public",
+      "allowed_roles": ["analyst", "operations", "legal", "compliance"],
+      "allowed_departments": ["all"],
+      "s3_key": "documents/public/DOC-HANDBOOK-2026.json",
+      "last_updated": "2026-01-15",
+      "owner": "People Operations",
+      "contains_untrusted_input": false
+    },
+    {
+      "doc_id": "DOC-Q3-REV-2026",
+      "title": "Q3 2026 Quarterly Revenue & Operations Report",
+      "category": "Quarterly Revenue Report",
+      "access_level": "internal",
+      "allowed_roles": ["analyst", "operations", "legal", "compliance"],
+      "allowed_departments": ["finance", "operations", "legal", "executive", "compliance"],
+      "s3_key": "documents/internal/DOC-Q3-REV-2026.json",
+      "last_updated": "2026-10-12",
+      "owner": "Corporate FP&A",
+      "contains_untrusted_input": false
+    },
+    {
+      "doc_id": "DOC-ANNUAL-FIN-2025",
+      "title": "FY 2025 Annual Financial Report (Audited)",
+      "category": "Annual Financial Report",
+      "access_level": "internal",
+      "allowed_roles": ["analyst", "legal", "compliance"],
+      "allowed_departments": ["finance", "legal", "executive", "compliance"],
+      "s3_key": "documents/internal/DOC-ANNUAL-FIN-2025.json",
+      "last_updated": "2026-02-28",
+      "owner": "Office of the CFO",
+      "contains_untrusted_input": false
+    },
+    {
+      "doc_id": "DOC-POLICY-MEMO-2026",
+      "title": "Q4 Travel & External Vendor Procurement Addendum",
+      "category": "Employee Handbook",
+      "access_level": "internal",
+      "allowed_roles": ["analyst", "operations", "legal", "compliance"],
+      "allowed_departments": ["all"],
+      "s3_key": "documents/internal/DOC-POLICY-MEMO-2026.json",
+      "last_updated": "2026-10-29",
+      "owner": "Procurement Operations",
+      "contains_untrusted_input": true
+    },
+    {
+      "doc_id": "DOC-CONTRACTS-2026",
+      "title": "Meridian Logistics Corp — Master Services & Licensing Agreement",
+      "category": "Confidential Contracts",
+      "access_level": "confidential",
+      "allowed_roles": ["legal", "compliance"],
+      "allowed_departments": ["legal", "executive"],
+      "s3_key": "documents/confidential/DOC-CONTRACTS-2026.json",
+      "last_updated": "2026-08-04",
+      "owner": "General Counsel",
+      "contains_untrusted_input": false
+    },
+    {
+      "doc_id": "DOC-CONTRACTS-MERIDIAN-NDA",
+      "title": "Project Alder — Non-Binding Acquisition Term Sheet & Mutual NDA",
+      "category": "Confidential Contracts",
+      "access_level": "confidential",
+      "allowed_roles": ["legal"],
+      "allowed_departments": ["legal", "executive"],
+      "s3_key": "documents/confidential/DOC-CONTRACTS-MERIDIAN-NDA.json",
+      "last_updated": "2026-09-19",
+      "owner": "Corporate Development & Legal",
+      "contains_untrusted_input": false
+    },
+    {
+      "doc_id": "DOC-PAYROLL-2026",
+      "title": "2026 Employee Payroll & Compensation Register",
+      "category": "Payroll Records",
+      "access_level": "restricted",
+      "allowed_roles": ["payroll_locked"],
+      "allowed_departments": ["hr_payroll_locked"],
+      "s3_key": "documents/restricted/DOC-PAYROLL-2026.json",
+      "last_updated": "2026-11-01",
+      "owner": "Executive Compensation Committee",
+      "contains_untrusted_input": false,
+      "pii_protected": true
+    },
+    {
+      "doc_id": "DOC-EXEC-BOARD-2026",
+      "title": "Internal Executive Records — Board Compensation & Succession Minutes",
+      "category": "Internal Executive Records",
+      "access_level": "restricted",
+      "allowed_roles": ["board_locked"],
+      "allowed_departments": ["executive_board_locked"],
+      "s3_key": "documents/restricted/DOC-EXEC-BOARD-2026.json",
+      "last_updated": "2026-11-05",
+      "owner": "Corporate Secretary",
+      "contains_untrusted_input": false,
+      "pii_protected": true
+    }
+  ]
+}

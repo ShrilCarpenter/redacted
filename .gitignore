@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+*.db
+*.sqlite3
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+*.tsbuildinfo
+
+# Environment & Local Secrets
+.env
+.env.local
+backend/.env
+aws_outputs.json
+.agentcore_state.json
+
+# Logs & Artifacts
+logs/
+*.log
+coverage/
+.coverage
+
+# OS
+.DS_Store
+Thumbs.db
