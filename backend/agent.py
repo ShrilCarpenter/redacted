@@ -16,7 +16,7 @@ from botocore.exceptions import BotoCoreError, ClientError, NoCredentialsError, 
 
 from audit import audit_logger
 from authorization import PolicyDecision, SessionSecurityState, UserRecord, policy_engine
-from config import AGENTCORE_DIR, HARNESS_ALLOWED_TOOLS, settings
+from config import AGENTCORE_DIR, HARNESS_ALLOWED_TOOLS, get_boto_session, settings
 from documents import document_store
 from guardrails import build_bedrock_guardrail_config, detect_sensitive_output_leak
 from models import (
@@ -130,15 +130,7 @@ class AgentCoreService:
     """Client wrapper around boto3 bedrock-agentcore & bedrock-agentcore-control."""
 
     def _boto_session(self) -> boto3.Session:
-        kwargs: Dict[str, Any] = {"region_name": settings.aws_region}
-        if settings.aws_profile:
-            kwargs["profile_name"] = settings.aws_profile
-        if settings.aws_access_key_id and settings.aws_secret_access_key:
-            kwargs["aws_access_key_id"] = settings.aws_access_key_id
-            kwargs["aws_secret_access_key"] = settings.aws_secret_access_key
-            if settings.aws_session_token:
-                kwargs["aws_session_token"] = settings.aws_session_token
-        return boto3.Session(**kwargs)
+        return get_boto_session()
 
     def _control_client(self):
         return self._boto_session().client(

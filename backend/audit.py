@@ -11,9 +11,9 @@ from pathlib import Path
 from typing import List, Optional
 
 import boto3
-from botocore.exceptions import BotoCoreError, ClientError, NoCredentialsError
+from botocore.exceptions import BotoCoreError, ClientError, NoCredentialsError, ProfileNotFound
 
-from config import settings
+from config import get_boto_session, settings
 from models import ActivityEvent
 
 _SENSITIVE_SCRUB_PATTERNS = [
@@ -149,7 +149,7 @@ class AuditLogger:
         if not settings.cloudwatch_log_group:
             return
         try:
-            client = boto3.client("logs", region_name=settings.aws_region)
+            client = get_boto_session().client("logs", region_name=settings.aws_region)
             payload = {
                 "timestamp": event.timestamp,
                 "request_id": event.request_id,

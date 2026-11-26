@@ -30,7 +30,7 @@ def test_create_and_invoke_harness_conform_to_botocore_model() -> None:
     """Validate exact CreateHarness & InvokeHarness parameter shapes against botocore==1.44.12."""
     ctrl = boto3.client(
         "bedrock-agentcore-control",
-        region_name="us-west-2",
+        region_name="ap-southeast-2",
         aws_access_key_id="AKIAIOSFODNN7EXAMPLE",
         aws_secret_access_key="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
     )
@@ -41,12 +41,12 @@ def test_create_and_invoke_harness_conform_to_botocore_model() -> None:
             "harness": {
                 "harnessId": "redacted-12345",
                 "harnessName": "redacted_document_assistant",
-                "arn": "arn:aws:bedrock-agentcore:us-west-2:123456789012:harness/redacted-12345",
+                "arn": "arn:aws:bedrock-agentcore:ap-southeast-2:123456789012:harness/redacted-12345",
                 "status": "READY",
                 "executionRoleArn": "arn:aws:iam::123456789012:role/RedactedRole",
                 "createdAt": "2026-11-26T00:00:00Z",
                 "updatedAt": "2026-11-26T00:00:00Z",
-                "model": {"bedrockModelConfig": {"modelId": "us.anthropic.claude-sonnet-4-5-20250514-v1:0"}},
+                "model": {"bedrockModelConfig": {"modelId": "amazon.nova-pro-v1:0"}},
                 "systemPrompt": [{"text": "Redacted instructions"}],
                 "tools": build_harness_inline_tools(),
                 "skills": [],
@@ -54,7 +54,7 @@ def test_create_and_invoke_harness_conform_to_botocore_model() -> None:
                 "truncation": {"strategy": "sliding_window"},
                 "environment": {
                     "agentCoreRuntimeEnvironment": {
-                        "agentRuntimeArn": "arn:aws:bedrock-agentcore:us-west-2:123456789012:runtime/rt-1",
+                        "agentRuntimeArn": "arn:aws:bedrock-agentcore:ap-southeast-2:123456789012:runtime/rt-1",
                         "agentRuntimeName": "rt",
                         "agentRuntimeId": "rt-1",
                         "lifecycleConfiguration": {"idleRuntimeSessionTimeout": 300, "maxLifetime": 3600},
@@ -68,7 +68,7 @@ def test_create_and_invoke_harness_conform_to_botocore_model() -> None:
             "executionRoleArn": "arn:aws:iam::123456789012:role/RedactedRole",
             "model": {
                 "bedrockModelConfig": {
-                    "modelId": "us.anthropic.claude-sonnet-4-5-20250514-v1:0",
+                    "modelId": "amazon.nova-pro-v1:0",
                     "apiFormat": "converse_stream",
                     "additionalParams": {
                         "guardrailConfig": {
@@ -90,7 +90,7 @@ def test_create_and_invoke_harness_conform_to_botocore_model() -> None:
             executionRoleArn="arn:aws:iam::123456789012:role/RedactedRole",
             model={
                 "bedrockModelConfig": {
-                    "modelId": "us.anthropic.claude-sonnet-4-5-20250514-v1:0",
+                    "modelId": "amazon.nova-pro-v1:0",
                     "apiFormat": "converse_stream",
                     "additionalParams": {
                         "guardrailConfig": {
@@ -110,7 +110,7 @@ def test_create_and_invoke_harness_conform_to_botocore_model() -> None:
 
 def test_inline_tool_handoff_blocks_unauthorized_doc_before_retrieval(monkeypatch) -> None:
     """Simulate AgentCore Harness streaming a tool_use for DOC-PAYROLL-2026 and verify pre-retrieval R03 block."""
-    monkeypatch.setattr(settings, "agentcore_harness_arn", "arn:aws:bedrock-agentcore:us-west-2:123456789012:harness/redacted-123")
+    monkeypatch.setattr(settings, "agentcore_harness_arn", "arn:aws:bedrock-agentcore:ap-southeast-2:123456789012:harness/redacted-123")
     monkeypatch.setattr(settings, "bedrock_guardrail_id", "gr-test123")
 
     round_1_stream = _DummyPayloadStream(
@@ -174,7 +174,7 @@ def test_unavailable_aws_never_fabricates_passing_boundary_tests(monkeypatch) ->
         assert res.status == "inconclusive"
         assert res.error is not None
 
-    monkeypatch.setattr(settings, "agentcore_harness_arn", "arn:aws:bedrock-agentcore:us-west-2:123456789012:harness/x")
+    monkeypatch.setattr(settings, "agentcore_harness_arn", "arn:aws:bedrock-agentcore:ap-southeast-2:123456789012:harness/x")
     with patch("agent.AgentCoreService._boto_session") as mock_sess:
         mock_sess.return_value.client.side_effect = NoCredentialsError()
         report2 = run_boundary_tests(user=user, test_ids=["T01"])
@@ -216,3 +216,46 @@ def test_lambda_lifecycle_hook_validator() -> None:
         None,
     )
     assert r_ok["decision"] == "allow"
+
+
+def test_guardrail_config_and_confused_deputy_trust_policy() -> None:
+    """Validate guardrail-config.json against botocore Bedrock model and confused-deputy trust policy."""
+    br = boto3.client(
+        "bedrock",
+        region_name="ap-southeast-2",
+        aws_access_key_id="AKIAIOSFODNN7EXAMPLE",
+        aws_secret_access_key="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
+    )
+    stub_br = Stubber(br)
+    cfg = json.loads((PROJECT_ROOT / "agentcore" / "guardrail-config.json").read_text(encoding="utf-8"))
+    stub_br.add_response(
+        "create_guardrail",
+        {
+            "guardrailId": "gr-abc123",
+            "guardrailArn": "arn:aws:bedrock:ap-southeast-2:123456789012:guardrail/gr-abc123",
+            "version": "DRAFT",
+            "createdAt": "2026-11-26T00:00:00Z",
+        },
+    )
+    with stub_br:
+        res = br.create_guardrail(**cfg)
+    assert res["guardrailId"] == "gr-abc123"
+
+    trust = json.loads((PROJECT_ROOT / "infrastructure" / "harness-trust-policy.json").read_text(encoding="utf-8"))
+    stmt = trust["Statement"][0]
+    assert stmt["Condition"]["StringEquals"]["aws:SourceAccount"] == "<ACCOUNT_ID>"
+    assert "bedrock-agentcore:<REGION>:<ACCOUNT_ID>:*" in stmt["Condition"]["ArnLike"]["aws:SourceArn"]
+
+
+def test_get_boto_session_honors_profile_and_region(monkeypatch) -> None:
+    """Ensure get_boto_session passes configured profile_name and region_name."""
+    from config import get_boto_session
+
+    monkeypatch.setattr(settings, "aws_region", "ap-southeast-2")
+    monkeypatch.setattr(settings, "aws_profile", "redacted")
+    monkeypatch.setattr(settings, "aws_access_key_id", None)
+    monkeypatch.setattr(settings, "aws_secret_access_key", None)
+
+    with patch("boto3.Session") as mock_sess:
+        get_boto_session()
+        mock_sess.assert_called_once_with(region_name="ap-southeast-2", profile_name="redacted")

@@ -26,4 +26,4 @@
 ## Verification Transparency
 
 - **Executed & Verified Locally:** All Python security policy tests, `botocore==1.44.12` AgentCore service-model contract tests (`Stubber`), FastAPI API tests (`tests/`), and the React/TypeScript production build (`vite build`).
-- **Requires Your AWS Account to Execute Live:** Deploying AWS resources (`infrastructure/deployment/deploy_aws.py` — S3 bucket, IAM roles, Bedrock Guardrail, Lambda functions, CloudWatch log group, and Bedrock AgentCore Managed Harness) and running live end-to-end boundary tests (`infrastructure/deployment/run_live_boundary_tests.py` or the Boundary Tests page).
+- **Requires Your AWS Project to Execute Live:** Deploying AWS resources (`infrastructure/deployment/deploy_aws.py --region ap-southeast-2 --profile redacted` — S3 bucket, IAM roles, Bedrock Guardrail, Lambda functions, CloudWatch log group, and Bedrock AgentCore Managed Harness) and running live end-to-end boundary tests (`infrastructure/deployment/run_live_boundary_tests.py` or the Boundary Tests page).

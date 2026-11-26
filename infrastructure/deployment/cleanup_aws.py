@@ -1,43 +1,50 @@
 """Tear down all Redacted AWS resources to stop ongoing cloud charges.
 
 Usage (Windows PowerShell):
-  .\\backend\\.venv\\Scripts\\python.exe scripts\\cleanup_aws.py --region us-west-2
+  .\\backend\\.venv\\Scripts\\python.exe infrastructure\\deployment\\cleanup_aws.py --region ap-southeast-2 --profile redacted
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 
 import boto3
-from botocore.exceptions import ClientError, NoCredentialsError
+from botocore.exceptions import ClientError, NoCredentialsError, ProfileNotFound
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Clean up all AWS resources created by Redacted.")
-    parser.add_argument("--region", default="us-west-2")
+    parser.add_argument("--region", default=os.environ.get("AWS_REGION", "ap-southeast-2"))
+    parser.add_argument("--profile", default=os.environ.get("AWS_PROFILE", "redacted"))
     args = parser.parse_args()
 
     outputs_path = PROJECT_ROOT / "aws_outputs.json"
     outputs = json.loads(outputs_path.read_text(encoding="utf-8")) if outputs_path.exists() else {}
     region = outputs.get("aws_region", args.region)
+    profile = outputs.get("aws_profile", args.profile)
 
     try:
-        sts = boto3.client("sts", region_name=region)
+        sess_kwargs: dict[str, str] = {"region_name": region}
+        if profile:
+            sess_kwargs["profile_name"] = profile
+        session = boto3.Session(**sess_kwargs)
+        sts = session.client("sts", region_name=region)
         account_id = sts.get_caller_identity()["Account"]
-    except (NoCredentialsError, ClientError) as exc:
+    except (NoCredentialsError, ProfileNotFound, ClientError) as exc:
         print(f"ERROR: AWS credentials unavailable: {exc}")
         return 1
 
-    ac_ctrl = boto3.client("bedrock-agentcore-control", region_name=region)
-    bedrock = boto3.client("bedrock", region_name=region)
-    lam = boto3.client("lambda", region_name=region)
-    iam = boto3.client("iam", region_name=region)
-    s3 = boto3.client("s3", region_name=region)
-    logs = boto3.client("logs", region_name=region)
+    ac_ctrl = session.client("bedrock-agentcore-control", region_name=region)
+    bedrock = session.client("bedrock", region_name=region)
+    lam = session.client("lambda", region_name=region)
+    iam = session.client("iam", region_name=region)
+    s3 = session.client("s3", region_name=region)
+    logs = session.client("logs", region_name=region)
 
     harness_id = outputs.get("harness_id")
     if harness_id:

@@ -7,11 +7,11 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import boto3
-from botocore.exceptions import BotoCoreError, ClientError, NoCredentialsError
+from botocore.exceptions import BotoCoreError, ClientError, NoCredentialsError, ProfileNotFound
 
 from audit import audit_logger
 from authorization import PolicyDecision, SessionSecurityState, UserRecord, policy_engine
-from config import DATA_DIR, MIN_ANONYMITY_GROUP_SIZE, settings
+from config import DATA_DIR, MIN_ANONYMITY_GROUP_SIZE, get_boto_session, settings
 from guardrails import SanitizedDocument, sanitize_untrusted_document
 from models import RecordSummary
 
@@ -43,7 +43,7 @@ class DocumentStore:
 
         if settings.lambda_retriever_arn and mode in {"lambda", "auto"}:
             try:
-                lam = boto3.client("lambda", region_name=settings.aws_region)
+                lam = get_boto_session().client("lambda", region_name=settings.aws_region)
                 resp = lam.invoke(
                     FunctionName=settings.lambda_retriever_arn,
                     InvocationType="RequestResponse",
@@ -52,17 +52,17 @@ class DocumentStore:
                 payload = json.loads(resp["Payload"].read().decode("utf-8"))
                 if payload.get("statusCode") == 200 and "document" in payload:
                     return payload["document"], f"lambda:{settings.lambda_retriever_arn}"
-            except (NoCredentialsError, ClientError, BotoCoreError):
+            except (NoCredentialsError, ProfileNotFound, ClientError, BotoCoreError):
                 if mode == "lambda":
                     raise
 
         if settings.s3_documents_bucket and mode in {"s3", "auto"}:
             try:
-                s3 = boto3.client("s3", region_name=settings.aws_region)
+                s3 = get_boto_session().client("s3", region_name=settings.aws_region)
                 obj = s3.get_object(Bucket=settings.s3_documents_bucket, Key=s3_key)
                 data = json.loads(obj["Body"].read().decode("utf-8"))
                 return data, f"s3://{settings.s3_documents_bucket}/{s3_key}"
-            except (NoCredentialsError, ClientError, BotoCoreError):
+            except (NoCredentialsError, ProfileNotFound, ClientError, BotoCoreError):
                 if mode == "s3":
                     raise
 

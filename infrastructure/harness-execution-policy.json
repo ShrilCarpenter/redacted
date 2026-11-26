@@ -98,7 +98,7 @@
       ],
       "Resource": [
         "arn:aws:bedrock-agentcore:<REGION>:<ACCOUNT_ID>:workload-identity-directory/default",
-        "arn:aws:bedrock-agentcore:<REGION>:<ACCOUNT_ID>:workload-identity-directory/default/workload-identity/harness_redacted_document_assistant-*"
+        "arn:aws:bedrock-agentcore:<REGION>:<ACCOUNT_ID>:workload-identity-directory/default/workload-identity/harness_<HARNESS_NAME>-*"
       ]
     },
     {
@@ -111,7 +111,7 @@
         "bedrock-agentcore:ListEvents",
         "bedrock-agentcore:RetrieveMemoryRecords"
       ],
-      "Resource": "arn:aws:bedrock-agentcore:<REGION>:<ACCOUNT_ID>:memory/redacted_document_assistant-*"
+      "Resource": "arn:aws:bedrock-agentcore:<REGION>:<ACCOUNT_ID>:memory/<HARNESS_NAME>-*"
     },
     {
       "Sid": "ExplicitDenyDirectStorageShellOrPrivilegeEscalation",

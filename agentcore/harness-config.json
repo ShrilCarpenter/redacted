@@ -3,7 +3,7 @@
   "executionRoleArn": "arn:aws:iam::<ACCOUNT_ID>:role/RedactedAgentCoreHarnessExecutionRole",
   "model": {
     "bedrockModelConfig": {
-      "modelId": "us.anthropic.claude-sonnet-4-5-20250514-v1:0",
+      "modelId": "amazon.nova-pro-v1:0",
       "apiFormat": "converse_stream",
       "temperature": 0.1,
       "maxTokens": 1200,

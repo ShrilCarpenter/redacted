@@ -112,17 +112,17 @@ Open `http://localhost:5173` in your browser.
 
 ---
 
-## AWS Deployment (Requires Your AWS Account)
+## AWS Deployment (Requires Your AWS Project)
 
 ### Prerequisites
-1. Configure AWS credentials (`aws login` or `aws configure`) in a Region supporting Amazon Bedrock AgentCore Harness (e.g., `us-west-2` or `us-east-1`).
-2. Ensure Amazon Bedrock model access is enabled in your Region for `us.anthropic.claude-sonnet-4-5-20250514-v1:0` (or pass `--model-id` with another Bedrock model ID).
-3. Ensure your deploying IAM principal has permissions to create S3 buckets, IAM roles/inline policies, Lambda functions, Bedrock Guardrails, CloudWatch log groups, and AgentCore Harnesses (`bedrock-agentcore:CreateHarness`, `bedrock-agentcore:CreateAgentRuntime`, `bedrock-agentcore:CreateMemory`, `iam:PassRole`).
+1. Configure AWS credentials (`aws login --profile redacted --region ap-southeast-2`) in your project's selected Region (`ap-southeast-2` / Asia Pacific (Sydney)).
+2. Amazon Bedrock on-demand access for `amazon.nova-pro-v1:0` in `ap-southeast-2` works out of the box on the New AWS Experience Free Plan. (To use `au.anthropic.claude-sonnet-4-5-20250929-v1:0` instead, complete the one-time Anthropic use-case form in the Amazon Bedrock console and pass `--model-id au.anthropic.claude-sonnet-4-5-20250929-v1:0`.)
+3. Ensure your deploying principal has permissions to create S3 buckets, IAM roles/inline policies, Lambda functions, Bedrock Guardrails, CloudWatch log groups, and AgentCore Harnesses (`bedrock-agentcore:CreateHarness`, `bedrock-agentcore:CreateAgentRuntime`, `bedrock-agentcore:CreateMemory`, `iam:PassRole`).
 
 ### Deploy All AWS Resources & Managed Harness
 
 ```powershell
-.\backend\.venv\Scripts\python.exe infrastructure\deployment\deploy_aws.py --region us-west-2
+.\backend\.venv\Scripts\python.exe infrastructure\deployment\deploy_aws.py --region ap-southeast-2 --profile redacted
 ```
 
 This script:
@@ -158,7 +158,7 @@ Deploying and invoking AWS resources incurs charges billed to your AWS account:
 Run the cleanup script when finished testing to avoid ongoing charges:
 
 ```powershell
-.\backend\.venv\Scripts\python.exe infrastructure\deployment\cleanup_aws.py --region us-west-2
+.\backend\.venv\Scripts\python.exe infrastructure\deployment\cleanup_aws.py --region ap-southeast-2 --profile redacted
 ```
 
 This removes the AgentCore Managed Harness (and its managed memory via `deleteManagedMemory=True`), the Bedrock Guardrail, both Lambda functions, the three IAM roles, the S3 bucket (all object versions emptied), and the CloudWatch audit log group.

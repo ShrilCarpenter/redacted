@@ -43,7 +43,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    aws_region: str = "us-west-2"
+    aws_region: str = "ap-southeast-2"
     aws_access_key_id: str | None = None
     aws_secret_access_key: str | None = None
     aws_session_token: str | None = None
@@ -54,7 +54,7 @@ class Settings(BaseSettings):
     agentcore_harness_qualifier: str = "DEFAULT"
     agentcore_execution_role_arn: str = ""
 
-    bedrock_model_id: str = "us.anthropic.claude-sonnet-4-5-20250514-v1:0"
+    bedrock_model_id: str = "amazon.nova-pro-v1:0"
     bedrock_guardrail_id: str = ""
     bedrock_guardrail_version: str = "1"
 
@@ -79,3 +79,18 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+def get_boto_session():
+    """Create a boto3 Session honoring explicit keys or AWS CLI login profile (`redacted`)."""
+    import boto3
+
+    kwargs: dict[str, str] = {"region_name": settings.aws_region}
+    if settings.aws_access_key_id and settings.aws_secret_access_key:
+        kwargs["aws_access_key_id"] = settings.aws_access_key_id
+        kwargs["aws_secret_access_key"] = settings.aws_secret_access_key
+        if settings.aws_session_token:
+            kwargs["aws_session_token"] = settings.aws_session_token
+    elif settings.aws_profile:
+        kwargs["profile_name"] = settings.aws_profile
+    return boto3.Session(**kwargs)

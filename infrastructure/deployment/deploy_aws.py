@@ -1,7 +1,7 @@
 """Provision Redacted AWS infrastructure: S3, IAM Roles, Guardrail, Lambda Hooks/Retriever, CloudWatch, and AgentCore Managed Harness.
 
 Usage (Windows PowerShell):
-  .\\backend\\.venv\\Scripts\\python.exe infrastructure\\deployment\\deploy_aws.py --region us-west-2
+  .\\backend\\.venv\\Scripts\\python.exe infrastructure\\deployment\\deploy_aws.py --region ap-southeast-2 --profile redacted
 """
 
 from __future__ import annotations
@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import io
 import json
+import os
 import sys
 import time
 import zipfile
@@ -16,7 +17,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 import boto3
-from botocore.exceptions import ClientError, NoCredentialsError
+from botocore.exceptions import ClientError, NoCredentialsError, ProfileNotFound
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 AGENTCORE_DIR = PROJECT_ROOT / "agentcore"
@@ -132,7 +133,9 @@ def ensure_guardrail(bedrock: Any) -> tuple[str, str]:
     match = next((g for g in existing if g["name"] == cfg["name"]), None)
     if match:
         gid = match["id"]
-        print(f"[Bedrock] Using existing Guardrail: {gid}")
+        print(f"[Bedrock] Updating existing Guardrail: {gid}")
+        update_cfg = {k: v for k, v in cfg.items() if k not in ("tags", "clientRequestToken")}
+        bedrock.update_guardrail(guardrailIdentifier=gid, **update_cfg)
         ver_resp = bedrock.create_guardrail_version(guardrailIdentifier=gid, description="Updated Redacted policy")
         return gid, ver_resp["version"]
 
@@ -157,29 +160,34 @@ def ensure_cloudwatch(logs: Any, log_group: str, log_stream: str) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Deploy Redacted AWS infrastructure and AgentCore Managed Harness.")
-    parser.add_argument("--region", default="us-west-2")
-    parser.add_argument("--model-id", default="us.anthropic.claude-sonnet-4-5-20250514-v1:0")
+    parser.add_argument("--region", default=os.environ.get("AWS_REGION", "ap-southeast-2"))
+    parser.add_argument("--profile", default=os.environ.get("AWS_PROFILE", "redacted"))
+    parser.add_argument("--model-id", default="amazon.nova-pro-v1:0")
     parser.add_argument("--bucket", default="")
     parser.add_argument("--harness-name", default="redacted_document_assistant")
     args = parser.parse_args()
 
     try:
-        sts = boto3.client("sts", region_name=args.region)
+        sess_kwargs: Dict[str, Any] = {"region_name": args.region}
+        if args.profile:
+            sess_kwargs["profile_name"] = args.profile
+        session = boto3.Session(**sess_kwargs)
+        sts = session.client("sts", region_name=args.region)
         account_id = sts.get_caller_identity()["Account"]
-    except (NoCredentialsError, ClientError) as exc:
+    except (NoCredentialsError, ProfileNotFound, ClientError) as exc:
         print(f"ERROR: Valid AWS credentials are required before running deploy_aws.py: {exc}")
         return 1
 
     bucket_name = args.bucket or f"redacted-docs-{account_id}-{args.region}"
-    s3 = boto3.client("s3", region_name=args.region)
-    iam = boto3.client("iam", region_name=args.region)
-    lam = boto3.client("lambda", region_name=args.region)
-    bedrock = boto3.client("bedrock", region_name=args.region)
-    logs = boto3.client("logs", region_name=args.region)
-    ac_ctrl = boto3.client("bedrock-agentcore-control", region_name=args.region)
+    s3 = session.client("s3", region_name=args.region)
+    iam = session.client("iam", region_name=args.region)
+    lam = session.client("lambda", region_name=args.region)
+    bedrock = session.client("bedrock", region_name=args.region)
+    logs = session.client("logs", region_name=args.region)
+    ac_ctrl = session.client("bedrock-agentcore-control", region_name=args.region)
 
     ensure_s3_bucket(s3, bucket_name, args.region)
-    upload_dataset(bucket_name, args.region)
+    upload_dataset(bucket_name, args.region, session=session)
 
     cw_group = "/aws/redacted/security-audit"
     cw_stream = "backend-security-events"
@@ -190,7 +198,14 @@ def main() -> int:
     lambda_trust = json.dumps(
         {
             "Version": "2012-10-17",
-            "Statement": [{"Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}],
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {"Service": "lambda.amazonaws.com"},
+                    "Action": "sts:AssumeRole",
+                    "Condition": {"StringEquals": {"aws:SourceAccount": account_id}},
+                }
+            ],
         }
     )
     hook_lambda_policy = json.dumps(
@@ -244,10 +259,18 @@ def main() -> int:
         {"S3_DOCUMENTS_BUCKET": bucket_name},
     )
 
-    harness_trust = (INFRA_DIR / "harness-trust-policy.json").read_text(encoding="utf-8")
+    harness_trust = _render_policy(
+        INFRA_DIR / "harness-trust-policy.json",
+        {"<REGION>": args.region, "<ACCOUNT_ID>": account_id},
+    )
     harness_exec_policy = _render_policy(
         INFRA_DIR / "harness-execution-policy.json",
-        {"<REGION>": args.region, "<ACCOUNT_ID>": account_id, "<GUARDRAIL_ID>": guardrail_id},
+        {
+            "<REGION>": args.region,
+            "<ACCOUNT_ID>": account_id,
+            "<GUARDRAIL_ID>": guardrail_id,
+            "<HARNESS_NAME>": args.harness_name,
+        },
     )
     exec_role_arn = ensure_iam_role(
         iam,
@@ -344,6 +367,7 @@ def main() -> int:
 
     outputs = {
         "aws_region": args.region,
+        "aws_profile": args.profile,
         "account_id": account_id,
         "harness_arn": harness["arn"],
         "harness_id": harness["harnessId"],
@@ -359,8 +383,10 @@ def main() -> int:
     }
     (PROJECT_ROOT / "aws_outputs.json").write_text(json.dumps(outputs, indent=2), encoding="utf-8")
 
+    profile_line = f"AWS_PROFILE={args.profile}\n" if args.profile else ""
     env_content = (
         f"AWS_REGION={args.region}\n"
+        f"{profile_line}"
         f"AGENTCORE_HARNESS_ARN={harness['arn']}\n"
         f"AGENTCORE_HARNESS_ID={harness['harnessId']}\n"
         f"AGENTCORE_HARNESS_QUALIFIER=DEFAULT\n"

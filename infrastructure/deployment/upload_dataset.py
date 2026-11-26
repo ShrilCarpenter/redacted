@@ -2,19 +2,26 @@
 
 from __future__ import annotations
 
+import argparse
 import json
-import sys
+import os
 from pathlib import Path
+from typing import Any, Optional
 
 import boto3
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, NoCredentialsError, ProfileNotFound
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = PROJECT_ROOT / "data" / "documents"
 
 
-def upload_dataset(bucket_name: str, region: str) -> None:
-    s3 = boto3.client("s3", region_name=region)
+def upload_dataset(
+    bucket_name: str,
+    region: str = "ap-southeast-2",
+    session: Optional[boto3.Session] = None,
+) -> None:
+    sess = session or boto3.Session(region_name=region)
+    s3: Any = sess.client("s3", region_name=region)
     manifest = json.loads((DATA_DIR / "manifest.json").read_text(encoding="utf-8"))
 
     # Upload manifest
@@ -42,14 +49,19 @@ def upload_dataset(bucket_name: str, region: str) -> None:
 
 
 def main() -> int:
-    if len(sys.argv) < 2:
-        print("Usage: python scripts/upload_dataset.py <s3-bucket-name> [aws-region]")
-        return 1
-    bucket = sys.argv[1]
-    region = sys.argv[2] if len(sys.argv) > 2 else "us-west-2"
+    parser = argparse.ArgumentParser(description="Upload synthetic documents dataset to Amazon S3.")
+    parser.add_argument("bucket", help="Target S3 bucket name")
+    parser.add_argument("--region", default=os.environ.get("AWS_REGION", "ap-southeast-2"))
+    parser.add_argument("--profile", default=os.environ.get("AWS_PROFILE", "redacted"))
+    args = parser.parse_args()
+
     try:
-        upload_dataset(bucket, region)
-    except ClientError as exc:
+        sess_kwargs: dict[str, str] = {"region_name": args.region}
+        if args.profile:
+            sess_kwargs["profile_name"] = args.profile
+        session = boto3.Session(**sess_kwargs)
+        upload_dataset(args.bucket, args.region, session=session)
+    except (NoCredentialsError, ProfileNotFound, ClientError) as exc:
         print(f"AWS S3 error: {exc}")
         return 1
     return 0
